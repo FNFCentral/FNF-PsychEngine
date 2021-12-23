@@ -56,6 +56,10 @@ import DialogueBoxPsych;
 import sys.FileSystem;
 #end
 
+#if fnfcentral
+import Status;
+#end
+
 using StringTools;
 
 class PlayState extends MusicBeatState
@@ -1637,6 +1641,9 @@ class PlayState extends MusicBeatState
 		#end
 		setOnLuas('songLength', songLength);
 		callOnLuas('onSongStart', []);
+		#if fnfcentral
+		Status.Start(SONG.song, storyDifficulty);
+		#end
 	}
 
 	var debugNum:Int = 0;
@@ -2032,6 +2039,10 @@ class PlayState extends MusicBeatState
 		{
 			iconP1.swapOldIcon();
 		}*/
+
+		#if fnfcentral
+		Status.State(songScore, songTime, health, combo, ratingPercent, SONG.song, storyDifficulty);
+		#end
 
 		callOnLuas('onUpdate', [elapsed]);
 
@@ -2547,12 +2558,18 @@ class PlayState extends MusicBeatState
 
 				persistentUpdate = false;
 				persistentDraw = false;
+				
 				for (tween in modchartTweens) {
 					tween.active = true;
 				}
 				for (timer in modchartTimers) {
 					timer.active = true;
 				}
+
+				#if fnfcentral
+				Status.Fail(songScore, null, SONG.song, storyDifficulty);
+				#end
+
 				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x - boyfriend.positionArray[0], boyfriend.getScreenPosition().y - boyfriend.positionArray[1], camFollowPos.x, camFollowPos.y));
 				
 
@@ -3098,6 +3115,9 @@ class PlayState extends MusicBeatState
 		if(ret != FunkinLua.Function_Stop && !transitioning) {
 			if (SONG.validScore)
 			{
+				#if fnfcentral
+				Status.Pass(songScore, null, SONG.song, storyDifficulty);
+				#end
 				#if !switch
 				var percent:Float = ratingPercent;
 				if(Math.isNaN(percent)) percent = 0;
@@ -3626,6 +3646,17 @@ class PlayState extends MusicBeatState
 		//trace(daNote.missHealth);
 		songMisses++;
 		vocals.volume = 0;
+		#if fnfcentral
+		if (!daNote.isSustainNote) {
+			if (daNote.noteType == 'Hurt Note') {
+				Status.NoteMiss(daNote.strumTime, songScore, combo, ratingPercent, SONG.song, storyDifficulty, 2);
+			} else {
+				Status.NoteMiss(daNote.strumTime, songScore, combo, ratingPercent, SONG.song, storyDifficulty, 0);
+			}
+		} else {
+			Status.SustainMiss(daNote.strumTime, songScore, combo, ratingPercent, SONG.song, storyDifficulty, 0);
+		}
+		#end
 		if(!practiceMode) songScore -= 10;
 		
 		totalPlayed++;
@@ -3765,6 +3796,13 @@ class PlayState extends MusicBeatState
 				note.wasGoodHit = true;
 				if (!note.isSustainNote)
 				{
+					#if fnfcentral
+					if (note.noteType == 'Hurt Note') {
+						Status.NoteHit(note.strumTime, note.strumTime - Conductor.songPosition, songScore, combo, ratingPercent, SONG.song, storyDifficulty, 2);
+					} else {
+						Status.NoteHit(note.strumTime, note.strumTime - Conductor.songPosition, songScore, combo, ratingPercent, SONG.song, storyDifficulty, 0);
+					}
+					#end
 					note.kill();
 					notes.remove(note, true);
 					note.destroy();

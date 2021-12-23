@@ -10,6 +10,9 @@ To install LuaJIT do this: `haxelib install linc_luajit` on a Command prompt/Pow
 
 ...Or if you don't want your mod to be able to run .lua scripts, delete the "LUA_ALLOWED" line on Project.xml
 
+If you want to compile for FNF Central, you also have to have the Super Sick API.
+Install if with: `haxelib git SuperSickAPI https://github.com/FNFCentral/SuperSickAPI.git`.
+
 ## Credits:
 * Shadow Mario - Coding
 * RiverOaken - Arts and Animations

@@ -2,6 +2,10 @@ package;
 
 import flixel.FlxG;
 
+#if fnfcentral
+import Util;
+#end
+
 using StringTools;
 
 class Highscore
@@ -64,6 +68,12 @@ class Highscore
 
 	public static function saveWeekScore(week:String, score:Int = 0, ?diff:Int = 0):Void
 	{
+		#if fnfcentral
+		if (getWeekScore(week, diff) < score) {
+			Util.saveUserExtraInfo(formatSong(week, diff), score);
+		}
+		#end
+
 		var daWeek:String = formatSong(week, diff);
 
 		if (weekScores.exists(daWeek))
@@ -112,6 +122,10 @@ class Highscore
 		if (!songScores.exists(daSong))
 			setScore(daSong, 0);
 
+		#if fnfcentral
+		if (Util.getTopScoreSavedFromServer(song, diff) > songScores.get(formatSong(song, diff))) return Util.getTopScoreSavedFromServer(song, diff);
+		#end
+		
 		return songScores.get(daSong);
 	}
 
@@ -121,6 +135,10 @@ class Highscore
 		if (!songRating.exists(daSong))
 			setRating(daSong, 0);
 
+		#if fnfcentral
+		if (Util.getUserExtraInfoNumberFromServer(formatSong(song, diff) + "-rating") > songRating.get(formatSong(song, diff))) return Util.getUserExtraInfoNumberFromServer(formatSong(song, diff) + "-rating");
+		#end
+
 		return songRating.get(daSong);
 	}
 
@@ -129,6 +147,11 @@ class Highscore
 		var daWeek:String = formatSong(week, diff);
 		if (!weekScores.exists(daWeek))
 			setWeekScore(daWeek, 0);
+
+		#if fnfcentral
+		if (Util.getUserExtraInfoNumberFromServer(formatSong(week, diff)) > weekScores.get(formatSong(week, diff))) return Std.int(Util.getUserExtraInfoNumberFromServer(formatSong(week, diff)));
+		#end
+		
 
 		return weekScores.get(daWeek);
 	}

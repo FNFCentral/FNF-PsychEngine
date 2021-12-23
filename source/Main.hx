@@ -8,6 +8,9 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+#if fnfcentral
+import Register;
+#end
 
 class Main extends Sprite
 {
@@ -83,6 +86,10 @@ class Main extends Sprite
 		#if html5
 		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
+		#end
+
+		#if fnfcentral
+		Register.register();
 		#end
 	}
 }
